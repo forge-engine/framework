@@ -53,11 +53,22 @@ final class Bootstrap
     CacheRebuildTrigger::process();
 
     self::initEnvironment();
+    self::initTimezone();
     if (PHP_SAPI !== "cli") {
       self::initSession();
     }
     ContainerAppSetup::initOnce();
     self::initResetManager();
+  }
+
+  private static function initTimezone(): void
+  {
+    $configured = (string) (Environment::getInstance()->get('APP_TIMEZONE', '') ?? '');
+    $name = $configured !== '' && in_array($configured, timezone_identifiers_list(), true)
+      ? $configured
+      : 'UTC';
+
+    date_default_timezone_set($name);
   }
 
   private static function initResetManager(): void

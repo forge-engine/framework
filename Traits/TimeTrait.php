@@ -8,7 +8,7 @@ trait TimeTrait
 {
     public function toMilliseconds(string $input): int
     {
-        if (preg_match('/^(\d+)(ms|s|m|h)$/', $input, $matches)) {
+        if (preg_match('/^(\d+)(ms|s|m|h|d|w|mo|y)$/', $input, $matches)) {
             $value = (int)$matches[1];
             $unit  = $matches[2];
 
@@ -17,6 +17,10 @@ trait TimeTrait
                     's'  => $value * 1000,
                     'm'  => $value * 60_000,
                     'h'  => $value * 3_600_000,
+                    'd'  => $value * 86_400_000,
+                    'w'  => $value * 604_800_000,
+                    'mo' => $value * 2_592_000_000,
+                    'y'  => $value * 31_536_000_000,
             };
         }
 

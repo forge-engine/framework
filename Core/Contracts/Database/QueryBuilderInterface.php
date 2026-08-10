@@ -24,6 +24,16 @@ interface QueryBuilderInterface
 
     public function orderBy(string $column, string $direction = "ASC"): self;
 
+    public function orderByRaw(string $expression): self;
+
+    public function hasOrder(): bool;
+
+    public function resetOrder(): self;
+
+    public function latest(?string $column = "created_at"): self;
+
+    public function oldest(?string $column = "created_at"): self;
+
     public function limit(int $count): self;
 
     public function offset(int $count): self;

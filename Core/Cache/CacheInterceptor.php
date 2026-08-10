@@ -244,7 +244,7 @@ final class CacheInterceptor
 
         $dispatcher->dispatch(
             new $eventClass(
-                instance: $instance,
+                instanceClass: $instance::class,
                 method: $method->getName(),
                 args: $args,
                 key: $key,
