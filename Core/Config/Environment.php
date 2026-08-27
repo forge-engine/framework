@@ -32,7 +32,10 @@ final class Environment
 
     public function get(string $key, mixed $default = null): mixed
     {
-        return $this->config[$key] ?? $default;
+        // The singleton freezes $_ENV at construction, which may happen before
+        // EnvParser::load() populates it from .env (web boot). Read the live
+        // $_ENV as a fallback so env()/config always see the .env values.
+        return $this->config[$key] ?? ($_ENV[$key] ?? $default);
     }
 
     public function isDevelopment(): bool

@@ -17,7 +17,7 @@ final class Session implements SessionInterface
     {
         $this->config = [
             "name" => $this->getEnvVar("SESSION_NAME", "FORGE_SESSID"),
-            "lifetime" => (int) ($_ENV["SESSION_LIFETIME"] ?? 1440),
+            "lifetime" => (int) ($_ENV["SESSION_LIFETIME"] ?? 1440) * 60,
             "path" => $this->getEnvVar("SESSION_PATH", "/"),
             "domain" => $this->getEnvVar("SESSION_DOMAIN", ""),
             "secure" => (bool) ($_ENV["SESSION_SECURE"] ?? false),
