@@ -35,7 +35,6 @@ final class ContainerCLISetup
         $container = Container::getInstance();
         self::loadIncludes();
         SessionSetup::setup($container);
-        ErrorHandlerSetup::setup($container);
 
         $container->singleton(Application::class, function () use ($container) {
             return Application::getInstance($container);
@@ -43,6 +42,8 @@ final class ContainerCLISetup
 
         ModuleSetup::loadModules($container);
         ModuleSetup::preloadModules($container);
+
+        ErrorHandlerSetup::setup($container);
 
         $container->singleton(HelpCommand::class, function () use ($container) {
             $templateGenerator = $container->make(\Forge\Core\Services\TemplateGenerator::class);

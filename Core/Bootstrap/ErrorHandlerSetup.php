@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Forge\Core\Bootstrap;
 
+use Forge\Core\Contracts\ErrorHandlerInterface;
 use Forge\Core\DI\Container;
 use Forge\Core\Helpers\Logger;
 use Forge\Exceptions\MissingServiceException;
@@ -12,7 +13,9 @@ use ReflectionException;
 
 /**
  * Sets up error handling by discovering ErrorHandlerInterface implementations.
- * This allows any module to provide error handling capabilities.
+ * The interface is a kernel-owned contract; any module may self-register an
+ * implementation and it is discovered without hardcoding a capability
+ * namespace.
  */
 final class ErrorHandlerSetup
 {
@@ -26,34 +29,25 @@ final class ErrorHandlerSetup
         );
         error_reporting(E_ALL);
 
-        $errorHandlerInterface = 'Modules\ForgeRouter\Contracts\ErrorHandlerInterface';
+        $errorHandlerInterface = ErrorHandlerInterface::class;
         $errorHandler = null;
 
-        $interfaceLoaded = false;
         try {
-            $interfaceLoaded = interface_exists($errorHandlerInterface);
-        } catch (\Throwable) {
-            $interfaceLoaded = false;
-        }
-
-        if ($interfaceLoaded) {
-            try {
-                if ($container->has($errorHandlerInterface)) {
-                    $errorHandler = $container->get($errorHandlerInterface);
-                }
-
-                if (!$errorHandler) {
-                    $errorHandlers = $container->getAll(
-                        $errorHandlerInterface,
-                    );
-
-                    if (!empty($errorHandlers)) {
-                        $errorHandler = $errorHandlers[0];
-                    }
-                }
-            } catch (\Throwable $e) {
-                Logger::log("Failed to discover error handler", $e->getMessage());
+            if ($container->has($errorHandlerInterface)) {
+                $errorHandler = $container->get($errorHandlerInterface);
             }
+
+            if (!$errorHandler) {
+                $errorHandlers = $container->getAll(
+                    $errorHandlerInterface,
+                );
+
+                if (!empty($errorHandlers)) {
+                    $errorHandler = $errorHandlers[0];
+                }
+            }
+        } catch (\Throwable $e) {
+            Logger::log("Failed to discover error handler", $e->getMessage());
         }
 
         if (!$errorHandler) {
